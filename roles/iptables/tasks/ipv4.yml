@@ -1,0 +1,40 @@
+---
+# Setup ipv4 rules
+
+
+- name: Allow ssh from everywhere
+  iptables:
+      chain: INPUT
+      destination_port: 22
+      protocol: tcp
+      jump: ACCEPT
+      action: insert
+      comment: Allow ssh from everywhere
+
+- name: Allow established connections
+  iptables:
+      chain: INPUT
+      ctstate: ESTABLISHED,RELATED
+      jump: ACCEPT
+      action: insert
+      comment: Allow established connections
+
+- name: Allow everything from localhost
+  iptables:
+      chain: INPUT
+      source: 127.0.0.0/8
+      jump: ACCEPT
+      action: insert
+      comment: Allow everything from localhost
+      
+- name: Set policy to drop input packets that dont match the ones above
+  iptables:
+      chain: INPUT
+      policy: DROP
+      comment: Drop input that doesnt match rules
+
+- name: Set policy to drop forward packets
+  iptables:
+      chain: FORWARD
+      policy: DROP
+      comment: Drop forward
